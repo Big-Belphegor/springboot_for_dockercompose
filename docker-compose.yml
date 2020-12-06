@@ -1,0 +1,38 @@
+version: '3'
+services:
+  tomcat:
+    container_name: tomcat-web
+    network_mode: "host"
+    build: .
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./webapps/:/usr/local/tomcat/webapps
+  redis:
+    container_name: redis-db
+    network_mode: "host"
+    image: "redis:latest"
+    restart: always
+    ports:
+      - "6379:6379"
+  mysql:
+    container_name: mysql-db
+    network_mode: "host"
+    image: "mysql:8.0.22"
+    restart: always
+    ports:
+      - "3306:3306"
+    command:
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+      #MYSQL_USER: ${MYSQL_USER}
+      #MYSQL_PASS: ${MYSQL_PASS}
+    volumes:
+      - "${MYSQL_DIR}/data:/var/lib/mysql"
+      - "${MYSQL_DIR}/config:/etc/mysql/conf.d"
+      - "${MYSQL_DIR}/init:/docker-entrypoint-initdb.d/"
